@@ -13,7 +13,7 @@ export default function ViewMarks() {
 
   const fetchMarks = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/marks");
+      const res = await axios.get("https://backend-ze0j.onrender.com");
       setMarksData(res.data);
     } catch (err) {
       console.error("Error fetching marks:", err);
@@ -25,7 +25,7 @@ export default function ViewMarks() {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this record?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/marks/delete/${id}`);
+      await axios.delete(`https://backend-ze0j.onrender.com/delete/${id}`);
       alert("Record deleted successfully ✅");
       setMarksData(marksData.filter((item) => item.id !== id)); // frontend update
     } catch (err) {

@@ -20,7 +20,7 @@ export default function StudentLogin() {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/marks/student?rollNo=${formData.rollNo}&name=${formData.name}`
+        `https://backend-ze0j.onrender.com/student?rollNo=${formData.rollNo}&name=${formData.name}`
       );
 
       const data = await response.json();

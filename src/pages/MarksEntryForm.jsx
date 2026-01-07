@@ -55,7 +55,7 @@ export default function MarksEntryForm() {
   }
 
   try {
-    const response = await fetch("http://localhost:5000/api/marks/add", {
+    const response = await fetch("https://backend-ze0j.onrender.com", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
