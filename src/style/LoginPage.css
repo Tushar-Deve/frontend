@@ -1,0 +1,51 @@
+.container-login{
+    height:100vh;
+    background-color: whitesmoke;
+}
+.login-head{
+    height:10vh;
+}
+.container-box{
+    background-image: url("../assets/login-pg1.png");
+    background-size: cover;
+    height:80vh;
+    border-radius: 1rem;
+    box-shadow: 10px 10px 10px 10px silver;
+    
+}
+
+.button-section{
+    height:15vh;
+}
+
+.faculty-login-button{
+    font-size:1.3rem;
+    border-radius: 0.45rem;
+    padding:0.25rem;
+    color:black;
+    font-weight:600;
+    background-color: yellow;
+}
+
+.faculty-login-button:hover{
+    background-color: lightskyblue;
+}
+
+.student-login-button{
+    margin-left: 1rem;
+    font-size:1.3rem;
+    border-radius: 0.45rem;
+    padding:0.25rem;
+    color:black;
+    font-weight:600;
+    background-color: yellow;
+}
+
+.student-login-button:hover{
+    background-color: lightskyblue;
+}
+
+/* Smooth slide animation for inbox panel */
+.inbox-slider {
+  transition: right 0.3s ease-in-out;
+}
