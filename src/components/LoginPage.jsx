@@ -7,47 +7,71 @@ export default function LoginPage() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showForgot, setShowForgot] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
-  const [showInbox, setShowInbox] = useState(false); // ✅ NEW: to toggle slider
+  const [showInbox, setShowInbox] = useState(false); 
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (role === "faculty") {
-      if (
-        formData.email === "professorseemanandal@gmail.com" &&
-        formData.password === "22223333"
-      ) {
-        alert("✅ Faculty Login Successful!");
-        navigate("/facultyDashboard");
-      } else {
-        alert("❌ Invalid Faculty Email or Password!");
-        setFormData({ email: "", password: "" });
-      }
-    } else if (role === "student") {
-      if (
-        formData.email === "tushar@gmail.com" &&
-        formData.password === "22223333"
-      ) {
-        alert("✅ Student Login Successful!");
-        navigate("/studentDashboard");
-      } else {
-        alert("❌ Invalid Student Email or Password!");
-        setFormData({ email: "", password: "" });
-      }
+  if (!role) {
+    alert("⚠️ Please select a role before logging in!");
+    return;
+  }
+
+  try {
+    // ✅ Role ke hisaab se URL select karo
+    const url =
+      role === "faculty"
+        ? `${process.env.REACT_APP_BACKEND_URL}/api/faculty/login`
+        : `${process.env.REACT_APP_BACKEND_URL}/api/student/login`;
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: formData.email,
+        password: formData.password,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      alert(`✅ ${role} Login Successful!`);
+      if (role === "faculty") navigate("/facultyDashboard");
+      else navigate("/studentDashboard");
     } else {
-      alert("⚠️ Please select a role before logging in!");
+      alert(`❌ ${data.message}`);
       setFormData({ email: "", password: "" });
     }
-  };
+  } catch (error) {
+    console.error(error);
+    alert("❌ Error connecting to backend!");
+  }
+};
 
-  const handleForgotSubmit = (e) => {
+
+  const handleForgotSubmit = async (e) => {
     e.preventDefault();
-    alert(`🔗 Password reset link sent to ${resetEmail}`);
+    try {
+      const res = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/forgot-password`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: resetEmail }),
+        }
+      );
+      const data = await res.json();
+      alert(data.message);
+    } catch (error) {
+      console.error(error);
+      alert("❌ Error sending reset link!");
+    }
   };
 
   const handleClick = () => {
@@ -79,7 +103,6 @@ export default function LoginPage() {
           Login Portal
         </h2>
 
-        {/* ✅ Inbox button that toggles the slider */}
         <button
           type="button"
           className="btn btn-primary"
@@ -90,7 +113,6 @@ export default function LoginPage() {
         </button>
       </div>
 
-      {/* ✅ SLIDER (Right Side Panel) */}
       <div
         className={`inbox-slider ${showInbox ? "open" : ""}`}
         style={{
@@ -106,17 +128,15 @@ export default function LoginPage() {
           padding: "20px",
         }}
       >
-        {/* Close cdButton */}
         <button
           className="btn btn-danger mb-4"
           onClick={() => setShowInbox(false)}
           style={{ float: "right" }}
         >
-          ✖``
+          ✖
         </button>
 
         <h4 className="mb-4 mt-5">📥 Inbox Panel</h4>
-    
       </div>
 
       <div className="container text-center container-box">
@@ -227,3 +247,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

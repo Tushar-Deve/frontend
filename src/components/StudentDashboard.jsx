@@ -1,44 +1,43 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function StudentLogin() {
-  const [formData, setFormData] = useState({ rollNo: "", name: "" });
-  const [result, setResult] = useState(null);
+export default function StudentDashboard() {
+  const [formData, setFormData] = useState({ roll_no: "", name: "" });
+  const [results, setResults] = useState(null); // ARRAY
   const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ✅ Backend se student ka result fetch karna
+  // ✅ Fetch student marks (MULTIPLE SUBJECTS)
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setResult(null);
+    setResults(null);
 
     try {
-      const response = await fetch(
-        `https://backend-ze0j.onrender.com/student?rollNo=${formData.rollNo}&name=${formData.name}`
+      const res = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/marks/student?roll_no=${formData.roll_no}&name=${formData.name}`
       );
 
-      const data = await response.json();
+      const data = await res.json();
 
-      if (response.ok) {
-        setResult(data);
+      if (res.ok && Array.isArray(data) && data.length > 0) {
+        setResults(data); // ✅ ARRAY store
       } else {
-        setResult("not_found");
+        setResults("not_found");
       }
-    } catch (error) {
-      console.error("Error fetching result:", error);
-      setResult("error");
+    } catch (err) {
+      console.error("Error fetching student marks:", err);
+      setResults("error");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleClick = () => {
+  const handleLogout = () => {
     navigate("/login");
   };
 
@@ -53,9 +52,9 @@ export default function StudentLogin() {
       }}
     >
       <div className="container mt-5 text-center">
-        <h2 className="text-primary mb-4">🎓 Student Login</h2>
+        <h2 className="text-primary mb-4">🎓 Student Dashboard</h2>
 
-        {/* Login Form */}
+        {/* Form */}
         <form
           onSubmit={handleSubmit}
           className="mx-auto p-4 border rounded shadow-sm"
@@ -65,9 +64,9 @@ export default function StudentLogin() {
             <label className="form-label">Roll Number:</label>
             <input
               type="text"
-              name="rollNo"
+              name="roll_no"
               className="form-control"
-              value={formData.rollNo}
+              value={formData.roll_no}
               onChange={handleChange}
               required
             />
@@ -88,10 +87,11 @@ export default function StudentLogin() {
           <button type="submit" className="btn btn-primary w-100 my-2">
             {loading ? "Loading..." : "View Result"}
           </button>
+
           <button
             type="button"
-            className="btn btn-danger fs-6 w-100 my-2 p-2"
-            onClick={handleClick}
+            className="btn btn-danger w-100 my-2"
+            onClick={handleLogout}
           >
             🚪 Logout
           </button>
@@ -99,19 +99,37 @@ export default function StudentLogin() {
 
         {/* Result Section */}
         <div className="mt-4">
-          {result === "not_found" && (
+          {results === "not_found" && (
             <p className="text-danger fw-bold">❌ Result not found!</p>
           )}
-          {result === "error" && (
-            <p className="text-danger fw-bold">⚠️ Unable to fetch result.</p>
+
+          {results === "error" && (
+            <p className="text-danger fw-bold">
+              ⚠️ Unable to fetch result.
+            </p>
           )}
-          {result && result !== "not_found" && result !== "error" && (
-            <div className="card p-3 mx-auto" style={{ maxWidth: "400px" }}>
+
+          {Array.isArray(results) && (
+            <div className="card p-3 mx-auto" style={{ maxWidth: "500px" }}>
               <h4 className="text-success mb-3">Result Found 🎯</h4>
-              <p><strong>Roll No:</strong> {result.rollNo}</p>
-              <p><strong>Name:</strong> {result.name}</p>
-              <p><strong>Subject:</strong> {result.subject}</p>
-              <p><strong>Marks:</strong> {result.marks}</p>
+              <hr />
+              {results.map((item, index) => (
+                <div key={index} className="mb-2">
+                  <p>
+                    <strong>Roll No:</strong> {item.roll_no}
+                  </p>
+                  <p>
+                    <strong>Name:</strong> {item.name}
+                  </p>
+                  <p>
+                    <strong>Subject:</strong> {item.subject}
+                  </p>
+                  <p>
+                    <strong>Marks:</strong> {item.marks}
+                  </p>
+                  <hr />
+                </div>
+              ))}
             </div>
           )}
         </div>
@@ -119,3 +137,5 @@ export default function StudentLogin() {
     </div>
   );
 }
+
+

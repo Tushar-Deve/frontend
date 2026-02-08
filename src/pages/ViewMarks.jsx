@@ -6,31 +6,29 @@ export default function ViewMarks() {
   const [marksData, setMarksData] = useState([]);
   const navigate = useNavigate();
 
-  // ✅ Fetch data from backend
   useEffect(() => {
     fetchMarks();
   }, []);
 
   const fetchMarks = async () => {
     try {
-      const res = await axios.get("https://backend-ze0j.onrender.com");
+      const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/marks`);
       setMarksData(res.data);
     } catch (err) {
       console.error("Error fetching marks:", err);
-      alert("Error fetching data");
+      alert("Error fetching data ❌");
     }
   };
 
-  // ✅ Delete record
-  const handleDelete = async (id) => {
+  const handleDelete = async (roll_no) => {
     if (!window.confirm("Are you sure you want to delete this record?")) return;
     try {
-      await axios.delete(`https://backend-ze0j.onrender.com/delete/${id}`);
+      await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/marks/delete/${roll_no}`);
       alert("Record deleted successfully ✅");
-      setMarksData(marksData.filter((item) => item.id !== id)); // frontend update
+      setMarksData(marksData.filter((item) => item.roll_no !== roll_no));
     } catch (err) {
       console.error("Error deleting record:", err);
-      alert("Error deleting record");
+      alert("Error deleting record ❌");
     }
   };
 
@@ -39,14 +37,21 @@ export default function ViewMarks() {
   };
 
   return (
-    <div className="container-fluid position-fixed"
+    <div
+      className="container-fluid position-fixed"
       style={{
         backgroundImage: `url("/assets/all-bg.png")`,
         backgroundSize: "cover",
         height: "100vh",
         width: "100vw",
-      }}>
-      <button type="submit" className="btn btn-primary" style={{ height: "3rem", marginTop: "1.3rem", paddingInline: "2rem" }} onClick={handleClick}>
+      }}
+    >
+      <button
+        type="button"
+        className="btn btn-primary"
+        style={{ height: "3rem", marginTop: "1.3rem", paddingInline: "2rem" }}
+        onClick={handleClick}
+      >
         Back
       </button>
 
@@ -56,7 +61,6 @@ export default function ViewMarks() {
         <table className="table table-bordered table-striped shadow-sm">
           <thead className="table-dark">
             <tr>
-              <th>ID</th>
               <th>Roll No</th>
               <th>Name</th>
               <th>Subject</th>
@@ -68,15 +72,14 @@ export default function ViewMarks() {
             {marksData.length > 0 ? (
               marksData.map((row) => (
                 <tr key={row.id}>
-                  <td>{row.id}</td>
-                  <td>{row.rollNo}</td>
+                  <td>{row.roll_no}</td>
                   <td>{row.name}</td>
                   <td>{row.subject}</td>
                   <td>{row.marks}</td>
                   <td>
                     <button
                       className="btn btn-danger btn-sm"
-                      onClick={() => handleDelete(row.id)}
+                      onClick={() => handleDelete(row.roll_no)}
                     >
                       🗑️ Delete
                     </button>
@@ -84,7 +87,11 @@ export default function ViewMarks() {
                 </tr>
               ))
             ) : (
-              <tr><td colSpan="6" className="text-center">No records found</td></tr>
+              <tr>
+                <td colSpan="5" className="text-center">
+                  No records found
+                </td>
+              </tr>
             )}
           </tbody>
         </table>

@@ -3,102 +3,78 @@ import { useNavigate } from "react-router-dom";
 
 export default function MarksEntryForm() {
   const [formData, setFormData] = useState({
-    rollNo: "",
+    roll_no: "",
     name: "",
     subject: "",
     marks: "",
   });
 
-  const [records, setRecords] = useState([]); // store all entered marks
+  const [records, setRecords] = useState([]);
+  const navigate = useNavigate();
 
-  const navigate=useNavigate();
-
-  const handleClick=()=>{
+  const handleClick = () => {
     navigate("/facultyDashboard");
-  }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    // purani state copy + update specific field
     setFormData({ ...formData, [name]: value });
   };
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-
-  //   // validation
-  //   if (!formData.rollNo || !formData.name || !formData.subject || !formData.marks) {
-  //     alert("Please fill all fields!");
-  //     return;
-  //   }
-
-  //   // new record add in records array
-  //   setRecords([...records, formData]);
-
-  //   alert("Marks added successfully ✅");
-
-  //   // clear form
-  //   setFormData({
-  //     rollNo: "",
-  //     name: "",
-  //     subject: "",
-  //     marks: "",
-  //   });
-  // };
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!formData.rollNo || !formData.name || !formData.subject || !formData.marks) {
-    alert("Please fill all fields!");
-    return;
-  }
-
-  try {
-    const response = await fetch("https://backend-ze0j.onrender.com", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        rollNo: formData.rollNo,
-        name: formData.name,
-        subject: formData.subject,
-        marks: formData.marks
-      }),
-    });
-
-    const data = await response.json();
-    if (response.ok) {
-      alert(data.message);
-      setRecords([...records, formData]);
-      setFormData({ rollNo: "", name: "", subject: "", marks: "" });
-    } else {
-      alert(data.message || "Error occurred");
+    if (!formData.roll_no || !formData.name || !formData.subject || !formData.marks) {
+      alert("Please fill all fields!");
+      return;
     }
-  } catch (error) {
-    console.error("Error:", error);
-    alert("Server error ❌");
-  }
-};
 
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/marks/add`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData), // ✅ roll_no already correct
+        }
+      );
 
+      const data = await response.json();
+      if (response.ok) {
+        alert(data.message);
+        setRecords([...records, formData]);
+        setFormData({ roll_no: "", name: "", subject: "", marks: "" });
+      } else {
+        alert(data.message || "Error occurred ❌");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Server error ❌");
+    }
+  };
 
   return (
-    <div className="container-fluid  position-fixed" 
-    style={{
-      backgroundImage: `url("/assets/all-bg.png")`,
-      backgroundSize: "cover",
-      height: "100vh",
-      width: "100vw"
-    }}>
-      <button type="submit" className="btn btn-primary" style={{ height: "3rem", marginTop: "1.3rem", paddingInline: "2rem" }} onClick={(handleClick)}>
-          Back
+    <div
+      className="container-fluid position-fixed"
+      style={{
+        backgroundImage: `url("/assets/all-bg.png")`,
+        backgroundSize: "cover",
+        height: "100vh",
+        width: "100vw",
+      }}
+    >
+      <button
+        type="button"
+        className="btn btn-primary"
+        style={{ height: "3rem", marginTop: "1.3rem", paddingInline: "2rem" }}
+        onClick={handleClick}
+      >
+        Back
       </button>
-      <div className="container mt-5">
-        <h3 className="text-center text-primary fw-bold mb-4">
-          Marks Entry Form
-        </h3>
 
-        {/* Form */}
+      <div className="container mt-5">
+        <h3 className="text-center text-primary fw-bold mb-4">Marks Entry Form</h3>
+
         <form
           onSubmit={handleSubmit}
           className="p-4 border rounded shadow-sm mx-auto"
@@ -108,9 +84,9 @@ export default function MarksEntryForm() {
             <label className="form-label fw-semibold">Roll No:</label>
             <input
               type="text"
-              name="rollNo"
+              name="roll_no"
               className="form-control"
-              value={formData.rollNo}
+              value={formData.roll_no}
               onChange={handleChange}
               required
             />
@@ -157,7 +133,6 @@ export default function MarksEntryForm() {
           </button>
         </form>
 
-        {/* Display Entered Records */}
         {records.length > 0 && (
           <div className="mt-5">
             <h5 className="text-center text-secondary mb-3">Entered Records</h5>
@@ -173,7 +148,7 @@ export default function MarksEntryForm() {
               <tbody>
                 {records.map((rec, index) => (
                   <tr key={index}>
-                    <td>{rec.rollNo}</td>
+                    <td>{rec.roll_no}</td>
                     <td>{rec.name}</td>
                     <td>{rec.subject}</td>
                     <td>{rec.marks}</td>
@@ -184,6 +159,6 @@ export default function MarksEntryForm() {
           </div>
         )}
       </div>
-    </div >
+    </div>
   );
 }

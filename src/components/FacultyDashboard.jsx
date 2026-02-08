@@ -1,6 +1,5 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-// import "../style/FacultyDashboard.css"
 
 export default function FacultyDashboard() {
   const navigate = useNavigate();
